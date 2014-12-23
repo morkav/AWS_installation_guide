@@ -13,7 +13,7 @@ You will find
 <ul>
 <li>a .tex document that you can update/modify/copy 
 freely. Just mention my name please.</li>
-<li>a .pdg file with the instructions</li>
+<li>a .pdf file with the instructions</li>
 </ul>
 
 Hope it will help you !
