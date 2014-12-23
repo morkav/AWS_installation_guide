@@ -95,6 +95,21 @@ simply run the following commands (for debian/ubuntu instance):
 
 This part is up to you. Git is installed so if you use git+github then you just have to git clone your repo and that is it. The point here is to put your django project on the instance.
 
+\item setting git options 
+
+tape all the following commands to set the options:
+\begin{verbatim}
+git config --global color.diff auto
+git config --global color.status auto
+git config --global color.branch auto
+git config --global alias.br branch
+git config --global alias.ci commit
+git config --global alias.co checkout
+git config --global alias.st status
+git config --global user.name "votre_pseudo"
+git config --global user.email moi@email.com
+\end{verbatim}
+
 \item installation pyenv, pyenv virtualenv, pip and requirements.txt (if you have one)
 
 Normally, git should be installed by now. It is time to install pyenv and pyenv wrapper. \href{http://fgimian.github.io/blog/2014/04/20/better-python-version-and-environment-management-with-pyenv/}{Here} is a good start. However, do not install following what is in the link but what is above.
@@ -113,18 +128,22 @@ It is a program that launch and supervise different process automatically for us
 \begin{itemize}
 \item sudo vim /etc/supervisor/conf.d/django.conf
 \item fill the document with :
-
-[program:name\_wsgi\_process]\\
-command=/home/ubuntu/.pyenv/versions/name\_project\_env/bin/gunicorn \\
-\hspace*{0.2in}name\_project.wsgi:application -b 127.0.0.1:8005 -w 4 -t 30\\
-environment=LANG="en\_US.UTF-8"\\
-directory=/home/ubuntu/name\_project/name\_project/\\
-user=name\_of\_user (ubuntu in general)\\
-autostart=True\\
-autorestart=True\\
-stdout\_logfile=/var/log/django.log\\
-stderr\_logfile=/var/log/django.log\\
+\begin{verbatim}
+[program:name_wsgi_process]
+command=/home/ubuntu/.pyenv/versions/name_project_env/bin/gunicorn 
+    name_project.wsgi:application -b 127.0.0.1:8005 -w 4 -t 30
+environment=LANG="en_US.UTF-8"
+directory=/home/ubuntu/name_project/name_project/
+user=name_of_user (ubuntu in general)
+autostart=True
+autorestart=True
+stdout_logfile=/var/log/django.log
+stderr_logfile=/var/log/django.log
+\end{verbatim}
 \item enter : sudo supervisorctl update. This should returns added process group.
+\item for more info on the different part, check this link \url{http://reustle.io/blog/managing-long-running-processes-with-supervisor}
+\item to check that everything went alright, type this : \\
+gunicorn --check-config name\_wsgi\_process
 \item after modifications of django.conf file, you can launch these command to make them taken into account.\\
 supervisorctl reread\\
 supervisorctl reload\\
@@ -134,24 +153,25 @@ supervisorctl reload\\
 \begin{itemize}
 \item run sudo vim /etc/nginx/sites-available/django
 \item put this in it replacing what should be replaced.
-server\_names\_hash\_bucket\_size 350;
+\begin{verbatim}
+server_names_hash_bucket_size 350;
 
-underscores\_in\_headers on;
+underscores_in_headers on;
 
 server {
     listen 80;
-    server\_name project\_name
-    client\_max\_body\_size 10m;
-    set \$static\_root "/path/to/static/files";
-    set \$media\_root "/path/to/media/files";
+    server_name project_name;
+    client_max_body_size 10m;
+    set $static_root "/path/to/static/files";
+    set $media_root "/path/to/media/files";
 
     location /static {
-        alias \$static\_root;
+        alias $static_root;
         expires max;
     }
 
     location /media {
-        alias \$media\_root;
+        alias $media_root;
         expires max;
     }
  
@@ -160,14 +180,15 @@ server {
      }
  
      location / {
-        proxy\_set\_header  X-Real-IP  \$remote\_addr;
-        proxy\_set\_header  X-Forwarded-For \$proxy\_add\_x\_forwarded\_for;
-        proxy\_set\_header Host \$http\_host;
-        proxy\_pass http://127.0.0.1:8005;
-        proxy\_read\_timeout 120;
-        proxy\_connect\_timeout 120;
+        proxy_set_header  X-Real-IP  $remote_addr;
+        proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_pass http://127.0.0.1:8005;
+        proxy_read_timeout 120;
+        proxy_connect_timeout 120;
     }
 }
+\end{verbatim}
 \item run cd /etc/nginx/sites-enabled/
 \item if there is a default file in it, remove it (sudo rm default)
 \item creation of a symbolic link to our file : sudo ln -s /etc/nginx/sites-available/django django
