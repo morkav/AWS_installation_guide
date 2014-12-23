@@ -12,7 +12,7 @@ TV shows :P
 You will find 
 <ul>
 <li>a .tex document that you can update/modify/copy 
-freely. Just mentionned my name please.</li>
+freely. Just mention my name please.</li>
 <li>a .pdg file with the instructions</li>
 </ul>
 
