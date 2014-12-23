@@ -81,6 +81,7 @@ chmod 700 for ~/.ssh/ folder
 chmod 600 for the key
 \item run commande : ssh name\_of\_shortcut to connect to the instance
 \end{itemize}
+Now you should be connected to the terminal of the instance.
 
 \item installation (postgre etc..)
 simply run the following commands (for debian/ubuntu instance):
@@ -90,16 +91,88 @@ simply run the following commands (for debian/ubuntu instance):
 \item sudo apt-get install -y python git python-pip postgresql postgresql-server-dev-all python-dev libpq-dev supervisor nginx vim curl ntp libncurses5-dev make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm tcl8.5
 \end{itemize}
 
-\item installation pyenv et pyenv virtualenv
+\item clone your repository
+
+This part is up to you. Git is installed so if you use git+github then you just have to git clone your repo and that is it. The point here is to put your django project on the instance.
+
+\item installation pyenv, pyenv virtualenv, pip and requirements.txt (if you have one)
+
 Normally, git should be installed by now. It is time to install pyenv and pyenv wrapper. \href{http://fgimian.github.io/blog/2014/04/20/better-python-version-and-environment-management-with-pyenv/}{Here} is a good start. However, do not install following what is in the link but what is above.
 \begin{itemize}
 \item To install pyenv, follow the very well made guide here : \url{https://github.com/yyuu/pyenv\#installation} (source the .bash\_profile file after modification or it might not be taken into account)
 \item now install virtualenv following instructions here : \url{https://github.com/yyuu/pyenv-virtualenv}
-\item create a virtualenv with this command
+\item create a virtualenv with this command : pyenv virtualenv 2.7.8 nom\_du\_virtualenv 
+\item to install pip ... well do nothing, the previous command took care of it :D
+\item use pip install -r /path/to/requirement.txt to install all the required program with pip (fairly practical..)
+\item to activate the virtual env do : pyenv activate name\_virtualenv
+
 \end{itemize}
-\item installer pip et migrations
-\item nginx + gunicorn + supervisor
-\item security groups pour donner accès a tout le monde au truc et à l'instance pour la DB
+
+\item configuration of supervisor
+It is a program that launch and supervise different process automatically for us (thx dude). Here is how to configure it :
+\begin{itemize}
+\item sudo vim /etc/supervisor/conf.d/django.conf
+\item fill the document with :
+
+[program:name\_project]
+command=/home/ubuntu/.pyenv/versions/name\_project\_env/bin/gunicorn name\_project.wsgi:application -b 127.0.0.1:8005 -w 4 -t 30
+environment=LANG="en\_US.UTF-8"
+directory=/home/ubuntu/name\_project/name\_project/
+user=name\_of\_user (ubuntu in general)
+autostart=True
+autorestart=True
+stdout\_logfile=/var/log/django.log
+stderr\_logfile=/var/log/django.log
+\item enter : sudo supervisorctl update. This should returns added process group.
+\end{itemize}
+
+\item configure nginx
+\begin{itemize}
+\item run sudo vim /etc/nginx/sites-available/django
+\item put this in it replacing what should be replaced.
+server\_names\_hash\_bucket\_size 350;
+
+underscores\_in\_headers on;
+
+server {
+    listen 80;
+    server\_name project\_name
+    client\_max\_body\_size 10m;
+    set \$static\_root "/path/to/static/files";
+    set \$media\_root "/path/to/media/files";
+
+    location /static {
+        alias \$static\_root;
+        expires max;
+    }
+
+    location /media {
+        alias \$media\_root;
+        expires max;
+    }
+ 
+     location = /favicon.ico {
+        rewrite (.*) /static/ico/favicon.ico;
+     }
+ 
+     location / {
+        proxy\_set\_header  X-Real-IP  \$remote\_addr;
+        proxy\_set\_header  X-Forwarded-For \$proxy\_add\_x\_forwarded\_for;
+        proxy\_set\_header Host \$http\_host;
+        proxy\_pass http://127.0.0.1:8005;
+        proxy\_read\_timeout 120;
+        proxy\_connect\_timeout 120;
+    }
+}
+\item run cd /etc/nginx/sites-enabled/
+\item if there is a default file in it, remove it (sudo rm default)
+\item creation of a symbolic link to our file : sudo ln -s /etc/nginx/sites-available/django django
+\item to launch the server type : sudo service nginx start
+\end{itemize}
+
+\item every time you modify something, the dev server relaunch by itself, here it is not the case. You have to type : 
+sudo supervisorctl restart program\_name
+sudo service nginx reload
 \end{enumerate}
 
 \end{document}
