@@ -1,0 +1,105 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                   %%        
+%%  Author : Pierre-Victor Chaumier  %%
+%%                                   %%
+%%  Version : DEC/2014 - V0.1        %%   
+%%                                   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper, notitlepage, oneside, 12pt]{article}
+
+%%%%%%%%%%%%
+% Packages %
+%%%%%%%%%%%%
+
+\usepackage[latin1]{inputenc} % encodage
+\usepackage[T1]{fontenc} 
+\usepackage[english]{babel} % Pour avoir le support de la langue francaise
+\usepackage[margin=2.5cm]{geometry} % pour modifier les marges
+\usepackage{color} % pour mettre du texte en couleur
+\usepackage{hyperref} % pour mettre des liens
+\usepackage{changepage} % pour mettre de l'indentation sur un paragraphe entier
+% \usepackage{parskip} % pour mettre des espaces entre les paragraphes
+\usepackage{graphicx} % pour les images
+\usepackage{tabularx} % gestion des tableaux avec taille des colonnes automatique
+
+\setcounter{tocdepth}{4} % défini la hauteur de l'arborescence à faire apparaitre dans la table of content
+\setlength{\parskip}{\baselineskip}
+\let\EndItemize\enditemize % rajoute une ligne après les listes
+\def\enditemize{\EndItemize\bigskip}
+
+%%%%%%%%%%%%
+% Document %
+%%%%%%%%%%%%
+
+\begin{document}
+\title{DOCUMENTATION AWS-DJANGO}
+\author{Pierre-Victor \textsc{Chaumier}}
+\date{Décembre 2014}
+\maketitle
+
+\begin{enumerate}
+\item launch instance
+
+\begin{itemize}
+\item go on EC2 page
+\item on left panel, click on instance
+\item click on launch instance button
+\item select distro
+\item select instance type
+\item choose a security key or create a new one (DO NOT LOOSE IT, it is used to connect to the instance. Key lost means having to kill the instance and start again..) 
+I put it in the ~/.ssh/ folder
+\end{itemize}
+Now your instance should be up running
+
+
+\item Create a DB
+\begin{itemize}
+\item on the main AWS panel, go on RDS
+\item click on get started now
+\item Select database
+\item production (be careful dafault one is not free)
+\item choose details and settings (for instance my DB instance identifier is "dbinstance", my master username is "dbadmin" and my password is "password" no kidding ^^)
+\item complete advanced settings. BE CAREFUL with publicly accessible. I put no so that only my instances on AWS can access it. Choose a dbname (mine is dbname\_of\_project)
+\item click on launching db instance. Creating a DB can take a little time so be patient.
+\item create a security group (they are available from the ec2 dashboard on the left) name it as you wish (i choose dbsecuritygroup), inbound should be HTTP with custom IP for the source. The custom IP will be the identifier of the security group of your instance sg... 
+\end{itemize}
+That is it, your DB should be safe and running now.
+
+
+\item Setting up the shortcut to connect with ssh using config file in .ssh/ folder
+\begin{itemize}
+\item go in your ~/.ssh/ folder
+\item create a file named config
+\item fill it as follow :
+Host name\_of\_shortcut
+HostName addresse of your instance ec2...
+User name\_of\_user (ubuntu for ubuntu instances)
+IdentityFile /path/to/key/file/ (generated earlier)
+\item change rights 
+chmod 700 for ~/.ssh/ folder
+chmod 600 for the key
+\item run commande : ssh name\_of\_shortcut to connect to the instance
+\end{itemize}
+
+\item installation (postgre etc..)
+simply run the following commands (for debian/ubuntu instance):
+\begin{itemize}
+\item sudo apt-get update
+\item sudo apt-get upgrade
+\item sudo apt-get install -y python git python-pip postgresql postgresql-server-dev-all python-dev libpq-dev supervisor nginx vim curl ntp libncurses5-dev make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm tcl8.5
+\end{itemize}
+
+\item installation pyenv et pyenv virtualenv
+Normally, git should be installed by now. It is time to install pyenv and pyenv wrapper. \href{http://fgimian.github.io/blog/2014/04/20/better-python-version-and-environment-management-with-pyenv/}{Here} is a good start. However, do not install following what is in the link but what is above.
+\begin{itemize}
+\item To install pyenv, follow the very well made guide here : \url{https://github.com/yyuu/pyenv\#installation} (source the .bash\_profile file after modification or it might not be taken into account)
+\item now install virtualenv following instructions here : \url{https://github.com/yyuu/pyenv-virtualenv}
+\item create a virtualenv with this command
+\end{itemize}
+\item installer pip et migrations
+\item nginx + gunicorn + supervisor
+\item security groups pour donner accès a tout le monde au truc et à l'instance pour la DB
+\end{enumerate}
+
+\end{document}
