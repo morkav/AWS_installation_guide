@@ -72,23 +72,28 @@ That is it, your DB should be safe and running now.
 \item go in your ~/.ssh/ folder
 \item create a file named config
 \item fill it as follow :
+\begin{verbatim}
 Host name\_of\_shortcut
 HostName addresse of your instance ec2...
 User name\_of\_user (ubuntu for ubuntu instances)
 IdentityFile /path/to/key/file/ (generated earlier)
+\end{verbatim}
 \item change rights 
-chmod 700 for ~/.ssh/ folder
-chmod 600 for the key
-\item run commande : ssh name\_of\_shortcut to connect to the instance
+\begin{verbatim}chmod 700 for ~/.ssh/ folder\end{verbatim}
+\begin{verbatim}chmod 600 for the key\end{verbatim}
+\item run commande : \begin{verbatim}ssh name\_of\_shortcut\end{verbatim} to connect to the instance
 \end{itemize}
 Now you should be connected to the terminal of the instance.
 
 \item installation (postgre etc..)
 simply run the following commands (for debian/ubuntu instance):
 \begin{itemize}
-\item sudo apt-get update
-\item sudo apt-get upgrade
-\item sudo apt-get install -y python git python-pip postgresql postgresql-server-dev-all python-dev libpq-dev supervisor nginx vim curl ntp libncurses5-dev make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm tcl8.5
+\item \begin{verbatim}sudo apt-get update\end{verbatim}
+\item \begin{verbatim}sudo apt-get upgrade\end{verbatim}
+\item \begin{verbatim}sudo apt-get install -y python git python-pip postgresql 
+  postgresql-server-dev-all python-dev libpq-dev supervisor nginx vim 
+  curl ntp libncurses5-dev make build-essential libssl-dev zlib1g-dev 
+  libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm tcl8.5\end{verbatim}
 \end{itemize}
 
 \item clone your repository
@@ -189,15 +194,17 @@ server {
     }
 }
 \end{verbatim}
-\item run cd /etc/nginx/sites-enabled/
+\item run \begin{verbatim}cd /etc/nginx/sites-enabled/\end{verbatim}
 \item if there is a default file in it, remove it (sudo rm default)
-\item creation of a symbolic link to our file : sudo ln -s /etc/nginx/sites-available/django django
-\item to launch the server type : sudo service nginx start
+\item creation of a symbolic link to our file : \begin{verbatim}sudo ln -s /etc/nginx/sites-available/django django\end{verbatim}
+\item to launch the server type : \begin{verbatim}sudo service nginx start\end{verbatim}
 \end{itemize}
 
 \item every time you modify something, the dev server relaunch by itself, here it is not the case. You have to type : 
+\begin{verbatim}
 sudo supervisorctl restart name\_wsgi\_process
 sudo service nginx reload
+\end{verbatim}
 \end{enumerate}
 
 \end{document}
