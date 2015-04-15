@@ -41,6 +41,8 @@
 \begin{enumerate}
 \item launch instance
 
+An EC2 instance is a virtual machine running in the AWS cloud. So basically, we are only going to create an ubuntu virtual machine (or anything else available) and generate a key to connect with ssh to the instance. It is on this instance that we will put our django code.
+
 \begin{itemize}
 \item go on EC2 page
 \item on left panel, click on instance
@@ -54,6 +56,9 @@ Now your instance should be up running
 
 
 \item Create a DB
+
+Here, we are going to launch a virtual machine optimized to run databases. I would recommend Postgresql because I like it (for no specific reason, never had any problem with MySQL). Then we are going to set the security rules so that only our EC2 instance can access the database.
+
 \begin{itemize}
 \item on the main AWS panel, go on RDS
 \item click on get started now
@@ -66,16 +71,23 @@ Now your instance should be up running
 \end{itemize}
 That is it, your DB should be safe and running now.
 
+\item Create a S3 instance to store media files
+
+S3 instance are specially designed to store files. I have not finished this part of the tutorial so you will have to store all the files on you EC2 instance for now. If you want to store it on a S3 instance, check the caktus group website. They did a good job explaining how to serve static and media files on AWS.
+
 
 \item Setting up the shortcut to connect with ssh using config file in .ssh/ folder
+
+This part explains only how to create and configure a ssh with a local key.
+
 \begin{itemize}
 \item go in your ~/.ssh/ folder
 \item create a file named config
 \item fill it as follow :
 \begin{verbatim}
-Host name\_of\_shortcut
+Host name_of_shortcut
 HostName addresse of your instance ec2...
-User name\_of\_user (ubuntu for ubuntu instances)
+User name_of_user (ubuntu for ubuntu instances)
 IdentityFile /path/to/key/file/ (generated earlier)
 \end{verbatim}
 \item change rights 
